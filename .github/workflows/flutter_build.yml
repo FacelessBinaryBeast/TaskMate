@@ -24,15 +24,10 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload Artifact (APK)
-        uses: actions/upload-artifact@v2  # Version 2 is being used here
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         with:
-          name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          
-      - name: Fallback Upload Artifact (using curl)  # Fallback mechanism
-        run: |
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -F "file=@build/app/outputs/flutter-apk/app-release.apk" \
-            "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ github.run_id }}/assets?name=app-release_
+          files: build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
